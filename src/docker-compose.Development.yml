@@ -1,0 +1,30 @@
+version: "3.4"
+# noinspection ComposeUnknownKeys
+name: "cms"
+
+services:
+  postgres:
+    container_name: pgsql
+    image: postgres:14.4-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - D:\repos\DbData\postgres:/var/lib/postgresql/data
+
+  clients.webapi:
+    container_name: clients-webapi
+    image: ${DOCKER_REGISTRY-}clientswebapi
+    build:
+      context: .
+      dockerfile: Clients/Clients.WebApi/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - CLIENTS_Db__ConnectionString=Host=postgres;Database=crs;Username=postgres;Password=1234
+    ports:
+      - "5000:5000"
