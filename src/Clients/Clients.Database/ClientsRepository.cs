@@ -36,8 +36,9 @@ public sealed class ClientsRepository : IClientsRepository
 
     public async Task<Client> GetClientById(string id, CancellationToken cancellationToken)
     {
-        const string Command = "select id as \"Id\", first_name as \"FirstName\", last_name as \"LastName\", birth_date as \"BirthDate\""
-                               + " from clients_ms.clients where id = @id";
+        const string Command =
+            "select id as \"Id\", first_name as \"FirstName\", last_name as \"LastName\", birth_date as \"BirthDate\""
+            + " from clients_ms.clients where id = @id";
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -59,7 +60,7 @@ public sealed class ClientsRepository : IClientsRepository
 
         if (enumerator.MoveNext())
         {
-            throw new ArgumentException($"There is no several Clients with id={id}", nameof(id));
+            throw new ArgumentException($"There are several Clients with id={id}", nameof(id));
         }
 
         return new Client

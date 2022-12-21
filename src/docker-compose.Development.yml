@@ -28,3 +28,18 @@ services:
       - CLIENTS_Db__ConnectionString=Host=postgres;Database=crs;Username=postgres;Password=1234
     ports:
       - "5000:5000"
+
+  cars.webapi:
+    container_name: cars-webapi
+    image: ${DOCKER_REGISTRY-}carswebapi
+    build:
+      context: .
+      dockerfile: Cars/Cars.WebApi/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:6000
+      - CARS_Db__ConnectionString=Host=postgres;Database=crs;Username=postgres;Password=1234
+    ports:
+      - "6000:6000"
