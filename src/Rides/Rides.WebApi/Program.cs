@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,9 @@ namespace Rides.WebApi
 
             builder.Configuration.AddEnvironmentVariables("RIDES_");
 
-            var connectionString = builder.Configuration["Db:ConnectionString"];
+            var connectionString = builder.Configuration["Db:ConnectionString"]
+                                   ?? throw new InvalidOperationException("No connection string configuration");
+
             builder.Services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
             builder.Services.AddSingleton(typeof(IEventStore<>), typeof(EventStore<>));
 

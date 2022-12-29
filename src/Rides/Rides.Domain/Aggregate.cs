@@ -9,8 +9,11 @@ public abstract class Aggregate
     public IReadOnlyCollection<(string Version, DomainEventBase Event)> Changes => _changes.AsReadOnly();
 
     private int _numericVersion = -1;
+    private int _numericInitialVersion = -1;
 
     public string Version => _numericVersion.ToString();
+
+    public string InitialVersion => _numericInitialVersion.ToString();
 
     public abstract string Id { get; }
 
@@ -30,5 +33,7 @@ public abstract class Aggregate
             When(evt);
             _numericVersion++;
         }
+
+        _numericInitialVersion = _numericVersion;
     }
 }

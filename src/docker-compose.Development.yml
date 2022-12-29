@@ -14,6 +14,17 @@ services:
     volumes:
       - D:\repos\ContainersData\postgres:/var/lib/postgresql/data
 
+  mongo:
+    container_name: mongodb
+    image: mongo:6.0-focal
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=madmin
+      - MONGO_INITDB_ROOT_PASSWORD=4321
+    ports:
+      - "27017:27017"
+    volumes:
+      - D:\repos\ContainersData\mongo:/data/db
+
   clients.webapi:
     container_name: clients-webapi
     image: ${DOCKER_REGISTRY-}clientswebapi
@@ -43,3 +54,18 @@ services:
       - CARS_Db__ConnectionString=Host=postgres;Database=crs;Username=postgres;Password=1234
     ports:
       - "6000:6000"
+
+  rides.webapi:
+    container_name: rides-webapi
+    image: ${DOCKER_REGISTRY-}rideswebapi
+    build:
+      context: .
+      dockerfile: Rides/Rides.WebApi/Dockerfile
+    depends_on:
+      - mongo
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7000
+      - RIDES_Db__ConnectionString=mongodb://madmin:4321@mongo:27017
+    ports:
+      - "7000:7000"

@@ -108,7 +108,7 @@ public class Ride : Aggregate
             case RideEvents.V1.RideCreated rideCreated:
                 _id = rideCreated.RideId;
                 ClientId = rideCreated.ClientId;
-                CarId = rideCreated.ClientId;
+                CarId = rideCreated.CarId;
                 CreatedTime = rideCreated.CreatedTime;
                 Status = RideStatus.Created;
                 break;
