@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rides.Persistence", "Rides\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rides.WebApi", "Rides\Rides.WebApi\Rides.WebApi.csproj", "{D62AC66A-6061-4AFB-83F9-52B4A30C9490}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rides.Services", "Rides\Rides.Services\Rides.Services.csproj", "{C04AB286-F5D7-4A06-A956-9BB0564C84F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{D62AC66A-6061-4AFB-83F9-52B4A30C9490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D62AC66A-6061-4AFB-83F9-52B4A30C9490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D62AC66A-6061-4AFB-83F9-52B4A30C9490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +109,7 @@ Global
 		{5190BDDB-9B4D-49EF-A7B1-C03210413F55} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
 		{E079AAF3-B6AB-4B67-BBBA-63C1F9DC6903} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
 		{D62AC66A-6061-4AFB-83F9-52B4A30C9490} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
+		{C04AB286-F5D7-4A06-A956-9BB0564C84F2} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39E709BC-3FFE-4383-B7DD-AC80F260478D}

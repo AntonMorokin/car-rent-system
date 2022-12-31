@@ -1,7 +1,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace Rides.Persistence.Model;
+namespace Rides.Persistence.Events;
 
 internal sealed class AggregateVersion
 {

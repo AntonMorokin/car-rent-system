@@ -1,4 +1,4 @@
-namespace Rides.Persistence.Model;
+namespace Rides.Persistence.Events;
 
 internal sealed class EventMetadata
 {

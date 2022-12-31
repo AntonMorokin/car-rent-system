@@ -1,9 +1,9 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
-using Rides.Domain;
+using Rides.Domain.Aggregates;
 using Rides.Domain.Events;
 
-namespace Rides.Persistence.Model;
+namespace Rides.Persistence.Events;
 
 internal sealed class EventEnvelope
 {

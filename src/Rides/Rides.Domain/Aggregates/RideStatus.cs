@@ -1,4 +1,4 @@
-namespace Rides.Domain;
+namespace Rides.Domain.Aggregates;
 
 public enum RideStatus
 {

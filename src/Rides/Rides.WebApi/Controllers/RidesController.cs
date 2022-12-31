@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Rides.Domain;
+using Rides.Domain.Aggregates;
 using Rides.Persistence;
 using Rides.WebApi.Contract.Requests;
 using Rides.WebApi.Contract.Responses;

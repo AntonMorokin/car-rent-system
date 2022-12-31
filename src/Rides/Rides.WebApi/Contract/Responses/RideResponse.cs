@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices.JavaScript;
 
 namespace Rides.WebApi.Contract.Responses;
 

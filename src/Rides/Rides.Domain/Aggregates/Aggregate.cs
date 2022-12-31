@@ -1,6 +1,6 @@
 using Rides.Domain.Events;
 
-namespace Rides.Domain;
+namespace Rides.Domain.Aggregates;
 
 public abstract class Aggregate
 {

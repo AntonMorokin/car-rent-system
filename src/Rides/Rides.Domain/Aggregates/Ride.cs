@@ -1,7 +1,7 @@
 using Rides.Domain.Events;
 using Rides.Domain.Exceptions;
 
-namespace Rides.Domain;
+namespace Rides.Domain.Aggregates;
 
 public class Ride : Aggregate
 {

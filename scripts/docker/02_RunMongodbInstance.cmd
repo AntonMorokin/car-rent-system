@@ -1,1 +1,1 @@
-docker run --name mongo-standalone -e MONGO_INITDB_ROOT_USERNAME=madmin -e MONGO_INITDB_ROOT_PASSWORD=4321 -p 27017:27017 -v D:\repos\ContainersData\mongo:/data/db --rm mongo:6.0-focal
+docker run --name mongo-standalone -h mongost -p 27017:27017 -v D:\repos\ContainersData\mongo\db:/data/db -v D:\repos\ContainersData\mongo\configdb:/data/configdb --rm mongo:6.0-focal --noauth --replSet crs

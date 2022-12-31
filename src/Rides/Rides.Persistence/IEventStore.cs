@@ -1,4 +1,4 @@
-using Rides.Domain;
+using Rides.Domain.Aggregates;
 
 namespace Rides.Persistence;
 

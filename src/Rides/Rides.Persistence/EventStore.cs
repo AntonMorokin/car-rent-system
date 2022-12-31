@@ -1,22 +1,21 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
-using Rides.Domain;
-using Rides.Persistence.Model;
+using Rides.Domain.Aggregates;
+using Rides.Persistence.Events;
 
 namespace Rides.Persistence;
 
 public sealed class EventStore<T> : IEventStore<T> where T : Aggregate, new()
 {
-    private const string DbName = "events";
-
     private readonly IMongoCollection<EventEnvelope> _events;
     private readonly IMongoCollection<AggregateVersion> _versions;
     private readonly string _aggregateName;
 
     public EventStore(IMongoClient mongoClient)
     {
-        var db = mongoClient.GetDatabase(DbName);
+        var db = mongoClient.GetDatabase(Consts.WriteDbName);
 
-        var eventsCollectionName = DbNamesMapper.GetCollectionName<T>();
+        var eventsCollectionName = DbNamesMapper.GetWriteCollectionName<T>();
         _events = db.GetCollection<EventEnvelope>(eventsCollectionName);
 
         _aggregateName = DbNamesMapper.GetAggregateName<T>();
@@ -82,7 +81,8 @@ public sealed class EventStore<T> : IEventStore<T> where T : Aggregate, new()
                      & filterBuilder.Eq(v => v.AggregateId, aggregateId);
 
         var update = Builders<AggregateVersion>.Update
-            .Set(v => v.Version, aggregateVersion);
+            .Set(v => v.Version, aggregateVersion)
+            .SetOnInsert(v => v.Id, ObjectId.GenerateNewId().ToString());
 
         await _versions.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 

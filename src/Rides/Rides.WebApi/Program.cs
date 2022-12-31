@@ -2,11 +2,14 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Rides.Domain.Events;
 using Rides.Persistence;
 using Rides.Persistence.Serialization;
+using Rides.Persistence.Services;
+using Rides.WebApi.Services;
 
 namespace Rides.WebApi
 {
@@ -24,6 +27,13 @@ namespace Rides.WebApi
             builder.Services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
             builder.Services.AddSingleton(typeof(IEventStore<>), typeof(EventStore<>));
 
+            builder.Services.AddSingleton<IHostedService>(p =>
+            {
+                var mongoClient = p.GetRequiredService<IMongoClient>();
+                var ridesListener = ChangeStreamListenerFactory.CreateRideListener(mongoClient);
+                return new ChangeStreamListenerBackgroundService(ridesListener);
+            });
+            
             BsonSerializer.RegisterDiscriminatorConvention(
                 typeof(DomainEventBase),
                 new DomainEventDiscriminatorConvention());

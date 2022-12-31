@@ -17,13 +17,13 @@ services:
   mongo:
     container_name: mongodb
     image: mongo:6.0-focal
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=madmin
-      - MONGO_INITDB_ROOT_PASSWORD=4321
+    hostname: mongo
     ports:
       - "27017:27017"
     volumes:
-      - D:\repos\ContainersData\mongo:/data/db
+      - D:\repos\ContainersData\mongo\db:/data/db
+      - D:\repos\ContainersData\mongo\configdb:/data/configdb
+    command: --noauth --replicaSet crs
 
   clients.webapi:
     container_name: clients-webapi
@@ -66,6 +66,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:7000
-      - RIDES_Db__ConnectionString=mongodb://madmin:4321@mongo:27017
+      - RIDES_Db__ConnectionString=mongodb://mongo:27017/?replicaSet=crs
     ports:
       - "7000:7000"
