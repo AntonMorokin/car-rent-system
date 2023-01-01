@@ -6,7 +6,7 @@ using Rides.Persistence.Views;
 
 namespace Rides.Persistence.Listeners;
 
-internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListener, IDisposable
+internal sealed class EventChangesListener<TAgg, TView> : IChangeStreamListener, IDisposable
     where TAgg : Aggregate
     where TView : ViewBase, new()
 {
@@ -22,7 +22,7 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
 
     private IChangeStreamCursor<ChangeStreamDocument<EventEnvelope>>? _changeStream;
 
-    protected EventChangesListener(IMongoClient mongoClient)
+    public EventChangesListener(IMongoClient mongoClient)
     {
         var writeCollectionName = DbNamesMapper.GetWriteCollectionName<TAgg>();
         _events = mongoClient.GetDatabase(Consts.WriteDbName)
@@ -61,11 +61,11 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
                     var aggregateVersion = change.FullDocument.Meta.AggregateVersion;
 
                     var view = await GetViewByIdAsync(aggregateId);
+
+                    view.When(change.FullDocument.Payload);
                     view.Version = aggregateVersion;
 
-                    var newView = await UpdateViewAsync(view, change);
-
-                    await _viewStore.StoreViewAsync(newView);
+                    await _viewStore.StoreViewAsync(view);
                 }
             }
 
@@ -83,7 +83,7 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
             {
                 return;
             }
-        
+
             var token = _changeStream.GetResumeToken();
             await SaveResumeTokenAsync(token);
         }
@@ -127,8 +127,6 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
             AggregateId = aggregateId
         };
     }
-
-    protected abstract Task<TView> UpdateViewAsync(TView view, ChangeStreamDocument<EventEnvelope> change);
 
     private Task SaveResumeTokenAsync(BsonDocument resumeToken)
     {

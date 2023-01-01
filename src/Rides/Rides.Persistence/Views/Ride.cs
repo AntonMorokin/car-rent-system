@@ -1,3 +1,6 @@
+using Rides.Domain.Events;
+using RideEventsV1 = Rides.Domain.Events.RideEvents.V1;
+
 namespace Rides.Persistence.Views;
 
 public sealed class Ride : ViewBase<Domain.Model.Ride>
@@ -34,5 +37,33 @@ public sealed class Ride : ViewBase<Domain.Model.Ride>
             OdometerReading = OdometerReading,
             CancellationReason = CancellationReason
         };
+    }
+
+    public override void When(DomainEventBase evt)
+    {
+        switch (evt)
+        {
+            case RideEventsV1.RideCreated created:
+                RideId = created.RideId;
+                ClientId = created.ClientId;
+                CarId = created.CarId;
+                CreatedTime = created.CreatedTime;
+                Status = created.Status.ToString();
+                break;
+            case RideEventsV1.RideStarted started:
+                StartedTime = started.StartedTime;
+                Status = started.Status.ToString();
+                break;
+            case RideEventsV1.RideFinished finished:
+                FinishedTime = finished.FinishedTime;
+                OdometerReading = finished.OdometerReading;
+                Status = finished.Status.ToString();
+                break;
+            case RideEventsV1.RideCancelled cancelled:
+                FinishedTime = cancelled.CancelledTime;
+                CancellationReason = cancelled.Reason;
+                Status = cancelled.Status.ToString();
+                break;
+        }
     }
 }
