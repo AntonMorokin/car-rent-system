@@ -6,17 +6,21 @@ using Rides.Persistence.Views;
 
 namespace Rides.Persistence.Listeners;
 
-internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListener
+internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListener, IDisposable
     where TAgg : Aggregate
     where TView : ViewBase, new()
 {
     private const string TokensCollectionName = "tokens";
     private const int DelayTimeoutInMs = 3_000;
 
+    private readonly CancellationTokenSource _cts = new();
+
     private readonly IMongoCollection<EventEnvelope> _events;
     private readonly IViewStore<TView> _viewStore;
     private readonly IMongoCollection<ResumeTokenInfo> _tokensCollection;
     private readonly string _aggregateName;
+
+    private IChangeStreamCursor<ChangeStreamDocument<EventEnvelope>>? _changeStream;
 
     protected EventChangesListener(IMongoClient mongoClient)
     {
@@ -32,26 +36,26 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
         _aggregateName = DbNamesMapper.GetAggregateName<TAgg>();
     }
 
-    public async Task ListenAsync(CancellationToken cts)
+    public async Task ListenAsync()
     {
         var options = await GetOptionsAsync();
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<EventEnvelope>>()
             .Match(d => d.OperationType == ChangeStreamOperationType.Insert
                         || d.OperationType == ChangeStreamOperationType.Update);
 
-        using var changes = await _events.WatchAsync(pipeline, options, cts);
+        _changeStream = await _events.WatchAsync(pipeline, options, _cts.Token);
 
-        while (!cts.IsCancellationRequested)
+        while (!_cts.IsCancellationRequested)
         {
-            while (!cts.IsCancellationRequested
-                   && await changes.MoveNextAsync(cts))
+            while (!_cts.IsCancellationRequested
+                   && await _changeStream.MoveNextAsync(_cts.Token))
             {
-                if (!changes.Current.Any())
+                if (!_changeStream.Current.Any())
                 {
-                    await Task.Delay(DelayTimeoutInMs, cts);
+                    await Task.Delay(DelayTimeoutInMs, _cts.Token);
                 }
 
-                foreach (var change in changes.Current)
+                foreach (var change in _changeStream.Current)
                 {
                     var aggregateId = change.FullDocument.Meta.AggregateId;
                     var aggregateVersion = change.FullDocument.Meta.AggregateVersion;
@@ -65,14 +69,29 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
                 }
             }
 
-            await Task.Delay(DelayTimeoutInMs, cts);
+            await Task.Delay(DelayTimeoutInMs, _cts.Token);
         }
+    }
 
-        var token = changes.GetResumeToken();
-        await SaveResumeTokenAsync(token);
+    public async Task StopAsync()
+    {
+        try
+        {
+            _cts.Cancel();
 
-        // TODO understand why client is disconnected before the operation is finished
-        await Task.Delay(1_000, CancellationToken.None);
+            if (_changeStream is null)
+            {
+                return;
+            }
+        
+            var token = _changeStream.GetResumeToken();
+            await SaveResumeTokenAsync(token);
+        }
+        finally
+        {
+            _changeStream?.Dispose();
+            _changeStream = null;
+        }
     }
 
     private async Task<ChangeStreamOptions> GetOptionsAsync()
@@ -120,5 +139,10 @@ internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListene
             .SetOnInsert(t => t.AggregateName, _aggregateName);
 
         return _tokensCollection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+    }
+
+    public void Dispose()
+    {
+        throw new NotImplementedException();
     }
 }

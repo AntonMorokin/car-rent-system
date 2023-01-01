@@ -16,6 +16,11 @@ public sealed class ChangeStreamListenerBackgroundService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _listener.ListenAsync(stoppingToken);
+        return _listener.ListenAsync();
+    }
+
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        return _listener.StopAsync();
     }
 }
