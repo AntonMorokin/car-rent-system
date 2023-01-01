@@ -3,7 +3,7 @@ using Clients.Model;
 
 namespace Clients.Services;
 
-public sealed class ClientsService : IClientsService
+internal sealed class ClientsService : IClientsService
 {
     private readonly TimeOnly _zero = TimeOnly.MinValue;
 

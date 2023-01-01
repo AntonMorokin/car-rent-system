@@ -2,7 +2,7 @@ using Rides.Domain.Model;
 
 namespace Rides.Services;
 
-public interface IRidesReadService
+internal interface IRidesReadService
 {
     Task<string> GetNextIdAsync();
 

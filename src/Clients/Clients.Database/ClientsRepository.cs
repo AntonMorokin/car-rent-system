@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace Clients.Database;
 
-public sealed class ClientsRepository : IClientsRepository
+internal sealed class ClientsRepository : IClientsRepository
 {
     private readonly string _connectionString;
 

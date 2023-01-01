@@ -4,7 +4,7 @@ using Rides.Persistence;
 
 namespace Rides.Services;
 
-public sealed class RidesWriteService : IRidesWriteService
+internal sealed class RidesWriteService : IRidesWriteService
 {
     private readonly IEventStore<Ride> _eventStore;
 

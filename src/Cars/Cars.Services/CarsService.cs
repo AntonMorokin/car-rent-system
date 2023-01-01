@@ -3,7 +3,7 @@ using Cars.Model;
 
 namespace Cars.Services;
 
-public sealed class CarsService : ICarsService
+internal sealed class CarsService : ICarsService
 {
     private readonly ICarsRepository _carsRepository;
 

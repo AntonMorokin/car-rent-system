@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Rides.Persistence.Views;
 
-public class ResumeTokenInfo
+internal class ResumeTokenInfo
 {
     [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
     public string? Id { get; set; }

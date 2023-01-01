@@ -5,7 +5,7 @@ using Rides.Persistence.Events;
 
 namespace Rides.Persistence;
 
-public sealed class EventStore<T> : IEventStore<T> where T : Aggregate, new()
+internal sealed class EventStore<T> : IEventStore<T> where T : Aggregate, new()
 {
     private readonly IMongoCollection<EventEnvelope> _events;
     private readonly IMongoCollection<AggregateVersion> _versions;

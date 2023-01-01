@@ -1,6 +1,6 @@
 namespace Rides.Services;
 
-public interface IRidesWriteService
+internal interface IRidesWriteService
 {
     Task CreateRideAsync(string rideId, string clientId, string carId, DateTimeOffset createdTime);
     Task StartRideAsync(string rideId, DateTimeOffset startedTime);

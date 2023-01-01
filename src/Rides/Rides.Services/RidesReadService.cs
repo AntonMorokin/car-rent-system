@@ -6,7 +6,7 @@ using Model = Rides.Domain.Model.Ride;
 
 namespace Rides.Services;
 
-public sealed class RidesReadService : IRidesReadService
+internal sealed class RidesReadService : IRidesReadService
 {
     private readonly IEventStore<Aggregate> _eventStore;
     private readonly IModelReader<Model> _modelReader;

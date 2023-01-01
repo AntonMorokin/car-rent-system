@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace Cars.Database;
 
-public sealed class CarsRepository : ICarsRepository
+internal sealed class CarsRepository : ICarsRepository
 {
     private readonly string _connectionString;
 

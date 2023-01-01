@@ -3,7 +3,7 @@ using Rides.Services.Queries;
 
 namespace Rides.Services.Handlers;
 
-public sealed class GetNextRideIdQueryHandler : IRequestHandler<GetNextRideIdQuery, string>
+internal sealed class GetNextRideIdQueryHandler : IRequestHandler<GetNextRideIdQuery, string>
 {
     private readonly IRidesReadService _readService;
 

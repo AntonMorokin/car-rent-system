@@ -1,6 +1,4 @@
-using System;
-using Cars.Database;
-using Cars.Services;
+using Common.Initialization.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,11 +13,9 @@ namespace Cars.WebApi
 
             builder.Configuration.AddEnvironmentVariables("CARS_");
 
-            var dbConnectionString = builder.Configuration["Db:ConnectionString"]
-                                     ?? throw new InvalidOperationException("No connection string configuration");
-
-            builder.Services.AddSingleton<ICarsRepository>(new CarsRepository(dbConnectionString));
-            builder.Services.AddSingleton<ICarsService, CarsService>();
+            builder.Services.AddFromInitializers(builder.Configuration,
+                new Database.ServiceInitializer(),
+                new Services.ServiceInitializer());
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

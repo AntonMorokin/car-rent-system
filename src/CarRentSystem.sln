@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rides.WebApi", "Rides\Rides
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rides.Services", "Rides\Rides.Services\Rides.Services.csproj", "{C04AB286-F5D7-4A06-A956-9BB0564C84F2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{535A4A0F-6468-4368-A5EA-3A0B511345A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Initialization", "Common\Common.Initialization\Common.Initialization.csproj", "{A8A7234E-110F-45E2-9F03-88F539832AE7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +97,10 @@ Global
 		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C04AB286-F5D7-4A06-A956-9BB0564C84F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8A7234E-110F-45E2-9F03-88F539832AE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8A7234E-110F-45E2-9F03-88F539832AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8A7234E-110F-45E2-9F03-88F539832AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8A7234E-110F-45E2-9F03-88F539832AE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,6 +118,7 @@ Global
 		{E079AAF3-B6AB-4B67-BBBA-63C1F9DC6903} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
 		{D62AC66A-6061-4AFB-83F9-52B4A30C9490} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
 		{C04AB286-F5D7-4A06-A956-9BB0564C84F2} = {CF15874A-1916-4E98-A93E-F2DBF4F2D1FE}
+		{A8A7234E-110F-45E2-9F03-88F539832AE7} = {535A4A0F-6468-4368-A5EA-3A0B511345A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39E709BC-3FFE-4383-B7DD-AC80F260478D}

@@ -3,7 +3,7 @@ using Rides.Services.Commands;
 
 namespace Rides.Services.Handlers;
 
-public sealed class CreateNewRideCommandHandler : IRequestHandler<CreateNewRideCommand>
+internal sealed class CreateNewRideCommandHandler : IRequestHandler<CreateNewRideCommand>
 {
     private readonly IRidesWriteService _writeService;
 

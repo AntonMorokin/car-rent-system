@@ -3,7 +3,7 @@ using Rides.Persistence.Views;
 
 namespace Rides.Persistence;
 
-public sealed class ViewStore<TView> : IViewStore<TView>
+internal sealed class ViewStore<TView> : IViewStore<TView>
     where TView : ViewBase, new()
 {
     private readonly IMongoCollection<TView> _views;

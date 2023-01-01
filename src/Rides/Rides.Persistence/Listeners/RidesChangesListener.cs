@@ -23,11 +23,21 @@ internal sealed class RidesChangesListener : EventChangesListener<Aggregate, Vie
                 view.ClientId = created.ClientId;
                 view.CarId = created.CarId;
                 view.CreatedTime = created.CreatedTime;
-                view.Status = Domain.Aggregates.RideStatus.Created.ToString();
+                view.Status = created.Status.ToString();
                 break;
             case RideEventsV1.RideStarted started:
                 view.StartedTime = started.StartedTime;
-                view.Status = Domain.Aggregates.RideStatus.InProgress.ToString();
+                view.Status = started.Status.ToString();
+                break;
+            case RideEventsV1.RideFinished finished:
+                view.FinishedTime = finished.FinishedTime;
+                view.OdometerReading = finished.OdometerReading;
+                view.Status = finished.Status.ToString();
+                break;
+            case RideEventsV1.RideCancelled cancelled:
+                view.FinishedTime = cancelled.CancelledTime;
+                view.CancellationReason = cancelled.Reason;
+                view.Status = cancelled.Status.ToString();
                 break;
         }
 

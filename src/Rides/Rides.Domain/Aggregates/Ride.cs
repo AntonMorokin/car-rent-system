@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using Rides.Domain.Events;
 using Rides.Domain.Exceptions;
 
@@ -6,7 +8,8 @@ namespace Rides.Domain.Aggregates;
 public class Ride : Aggregate
 {
     private string _id;
-    
+
+    public override string Id => _id;
     public string ClientId { get; private set; }
     public string CarId { get; private set; }
     public DateTimeOffset CreatedTime { get; private set; }
@@ -14,9 +17,9 @@ public class Ride : Aggregate
     public DateTimeOffset? FinishedTime { get; private set; }
     public float? OdometerReading { get; private set; }
     public string? CancellationReason { get; private set; }
-    public RideStatus Status { get; private set; }
 
-    public override string Id => _id;
+    [BsonRepresentation(BsonType.String)]
+    public RideStatus Status { get; private set; }
 
     public static Ride Create(string id, string clientId, string carId, DateTimeOffset createdTime)
     {
@@ -26,7 +29,8 @@ public class Ride : Aggregate
             RideId = id,
             ClientId = clientId,
             CarId = carId,
-            CreatedTime = createdTime
+            CreatedTime = createdTime,
+            Status = RideStatus.Created
         };
 
         inst.Apply(evt);
@@ -49,7 +53,8 @@ public class Ride : Aggregate
 
         Apply(new RideEvents.V1.RideStarted
         {
-            StartedTime = startedTime
+            StartedTime = startedTime,
+            Status = RideStatus.InProgress
         });
     }
 
@@ -73,7 +78,8 @@ public class Ride : Aggregate
         Apply(new RideEvents.V1.RideFinished
         {
             FinishedTime = finishTime,
-            OdometerReading = odometerReading
+            OdometerReading = odometerReading,
+            Status = RideStatus.Finished
         });
     }
 
@@ -93,11 +99,12 @@ public class Ride : Aggregate
         {
             throw new DomainException("Ride cancellation reason can't be empty");
         }
-        
+
         Apply(new RideEvents.V1.RideCancelled
         {
             CancelledTime = cancelledTime,
-            Reason = reason
+            Reason = reason,
+            Status = RideStatus.Canceled
         });
     }
 
@@ -105,26 +112,27 @@ public class Ride : Aggregate
     {
         switch (evt)
         {
-            case RideEvents.V1.RideCreated rideCreated:
-                _id = rideCreated.RideId;
-                ClientId = rideCreated.ClientId;
-                CarId = rideCreated.CarId;
-                CreatedTime = rideCreated.CreatedTime;
-                Status = RideStatus.Created;
+            case RideEvents.V1.RideCreated created:
+                _id = created.RideId;
+                ClientId = created.ClientId;
+                CarId = created.CarId;
+                CreatedTime = created.CreatedTime;
+                Status = created.Status;
                 break;
-            case RideEvents.V1.RideStarted rideStarted:
-                StartedTime = rideStarted.StartedTime;
+            case RideEvents.V1.RideStarted started:
+                StartedTime = started.StartedTime;
                 Status = RideStatus.InProgress;
+                Status = started.Status;
                 break;
-            case RideEvents.V1.RideFinished rideFinished:
-                FinishedTime = rideFinished.FinishedTime;
-                OdometerReading = rideFinished.OdometerReading;
-                Status = RideStatus.Finished;
+            case RideEvents.V1.RideFinished finished:
+                FinishedTime = finished.FinishedTime;
+                OdometerReading = finished.OdometerReading;
+                Status = finished.Status;
                 break;
-            case RideEvents.V1.RideCancelled rideCancelled:
-                FinishedTime = rideCancelled.CancelledTime;
-                CancellationReason = rideCancelled.Reason;
-                Status = RideStatus.Canceled;
+            case RideEvents.V1.RideCancelled cancelled:
+                FinishedTime = cancelled.CancelledTime;
+                CancellationReason = cancelled.Reason;
+                Status = cancelled.Status;
                 break;
             default:
                 throw new NotSupportedException(

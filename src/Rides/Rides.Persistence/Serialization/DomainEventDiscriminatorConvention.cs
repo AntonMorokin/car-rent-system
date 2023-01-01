@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Conventions;
 
 namespace Rides.Persistence.Serialization;
 
-public sealed class DomainEventDiscriminatorConvention : IDiscriminatorConvention
+internal sealed class DomainEventDiscriminatorConvention : IDiscriminatorConvention
 {
     private static readonly Assembly DomainAssembly = typeof(Domain.Events.RideEvents).Assembly;
 

@@ -1,7 +1,4 @@
-using System;
-using Clients.Database;
-using Clients.Services;
-using Dapper;
+using Common.Initialization.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,17 +13,13 @@ namespace Clients.WebApi
 
             builder.Configuration.AddEnvironmentVariables("CLIENTS_");
 
-            var connectionString = builder.Configuration["Db:ConnectionString"]
-                                   ?? throw new InvalidOperationException("No connection string configuration");
-
-            builder.Services.AddSingleton<IClientsRepository>(new ClientsRepository(connectionString));
-            builder.Services.AddSingleton<IClientsService, ClientsService>();
+            builder.Services.AddFromInitializers(builder.Configuration,
+                new Services.ServiceInitializer(),
+                new Database.ServiceInitializer());
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            SqlMapper.AddTypeHandler(Database.Converters.DateOnlyConverter.Single);
 
             var app = builder.Build();
 

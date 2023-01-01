@@ -1,6 +1,6 @@
 namespace Rides.Persistence.Views;
 
-public sealed class ModelReader<TView, TModel> : IModelReader<TModel>
+internal sealed class ModelReader<TView, TModel> : IModelReader<TModel>
     where TView : ViewBase<TModel>, new()
 {
     private readonly IViewStore<TView> _viewStore;
