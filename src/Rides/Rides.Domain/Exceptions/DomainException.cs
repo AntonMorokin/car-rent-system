@@ -2,14 +2,14 @@ namespace Rides.Domain.Exceptions;
 
 public class DomainException : Exception
 {
-    public int? ErrorCode { get; }
+    public ErrorCodes? ErrorCode { get; }
 
-    public DomainException(string message) : base(message)
-    {
-    }
-
-    public DomainException(int errorCode, string message) : this(message)
+    public DomainException(ErrorCodes errorCode, string message) : base(message)
     {
         ErrorCode = errorCode;
+    }
+
+    public DomainException(string message) : this(ErrorCodes.BusinessLogicViolation, message)
+    {
     }
 }

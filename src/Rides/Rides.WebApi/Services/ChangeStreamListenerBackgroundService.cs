@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Rides.Persistence.Services;
+using Rides.Persistence.Listeners;
 
 namespace Rides.WebApi.Services;
 

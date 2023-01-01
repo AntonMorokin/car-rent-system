@@ -1,4 +1,4 @@
-namespace Rides.Domain.Views;
+namespace Rides.Domain.Model;
 
 public record Ride
 {

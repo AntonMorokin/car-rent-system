@@ -4,32 +4,30 @@ using Rides.Domain.Aggregates;
 using Rides.Persistence.Events;
 using Rides.Persistence.Views;
 
-namespace Rides.Persistence.Services;
+namespace Rides.Persistence.Listeners;
 
-internal abstract class EventChangesListener<TAgg, TModel> : IChangeStreamListener
+internal abstract class EventChangesListener<TAgg, TView> : IChangeStreamListener
     where TAgg : Aggregate
-    where TModel : ReadModelBase, new()
+    where TView : ViewBase, new()
 {
     private const string TokensCollectionName = "tokens";
     private const int DelayTimeoutInMs = 3_000;
 
-    private readonly IMongoCollection<EventEnvelope> _writeCollection;
-    private readonly IMongoCollection<TModel> _readCollection;
+    private readonly IMongoCollection<EventEnvelope> _events;
+    private readonly IViewStore<TView> _viewStore;
     private readonly IMongoCollection<ResumeTokenInfo> _tokensCollection;
     private readonly string _aggregateName;
 
     protected EventChangesListener(IMongoClient mongoClient)
     {
         var writeCollectionName = DbNamesMapper.GetWriteCollectionName<TAgg>();
-        _writeCollection = mongoClient.GetDatabase(Consts.WriteDbName)
+        _events = mongoClient.GetDatabase(Consts.WriteDbName)
             .GetCollection<EventEnvelope>(writeCollectionName);
 
         var readDb = mongoClient.GetDatabase(Consts.ReadDbName);
-
-        var readCollectionName = DbNamesMapper.GetReadCollectionName<TAgg>();
-        _readCollection = readDb.GetCollection<TModel>(readCollectionName);
-
         _tokensCollection = readDb.GetCollection<ResumeTokenInfo>(TokensCollectionName);
+
+        _viewStore = new ViewStore<TView>(mongoClient);
 
         _aggregateName = DbNamesMapper.GetAggregateName<TAgg>();
     }
@@ -41,7 +39,7 @@ internal abstract class EventChangesListener<TAgg, TModel> : IChangeStreamListen
             .Match(d => d.OperationType == ChangeStreamOperationType.Insert
                         || d.OperationType == ChangeStreamOperationType.Update);
 
-        using var changes = await _writeCollection.WatchAsync(pipeline, options, cts);
+        using var changes = await _events.WatchAsync(pipeline, options, cts);
 
         while (!cts.IsCancellationRequested)
         {
@@ -58,12 +56,12 @@ internal abstract class EventChangesListener<TAgg, TModel> : IChangeStreamListen
                     var aggregateId = change.FullDocument.Meta.AggregateId;
                     var aggregateVersion = change.FullDocument.Meta.AggregateVersion;
 
-                    var model = await GetModelById(aggregateId);
-                    model.Version = aggregateVersion;
+                    var view = await GetViewByIdAsync(aggregateId);
+                    view.Version = aggregateVersion;
 
-                    var newModel = await UpdateModelAsync(model, change);
+                    var newView = await UpdateViewAsync(view, change);
 
-                    await SaveModelAsync(newModel);
+                    await _viewStore.StoreViewAsync(newView);
                 }
             }
 
@@ -100,27 +98,18 @@ internal abstract class EventChangesListener<TAgg, TModel> : IChangeStreamListen
         return info?.Token;
     }
 
-    private async Task<TModel> GetModelById(string aggregateId)
+    private async Task<TView> GetViewByIdAsync(string aggregateId)
     {
-        var model = await _readCollection
-            .Find(m => m.AggregateId == aggregateId)
-            .SingleOrDefaultAsync();
+        var view = await _viewStore.LoadViewByIdAsync(aggregateId);
 
-        return model ?? new TModel
+        return view ?? new TView
         {
+            Id = ObjectId.GenerateNewId().ToString(),
             AggregateId = aggregateId
         };
     }
 
-    protected abstract Task<TModel> UpdateModelAsync(TModel model, ChangeStreamDocument<EventEnvelope> change);
-
-    private Task SaveModelAsync(TModel newModel)
-    {
-        var filter = Builders<TModel>.Filter.Eq(m => m.AggregateId, newModel.AggregateId);
-        return _readCollection.ReplaceOneAsync(filter,
-            newModel,
-            new ReplaceOptions { IsUpsert = true });
-    }
+    protected abstract Task<TView> UpdateViewAsync(TView view, ChangeStreamDocument<EventEnvelope> change);
 
     private Task SaveResumeTokenAsync(BsonDocument resumeToken)
     {

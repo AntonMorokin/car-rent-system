@@ -1,4 +1,5 @@
 using Rides.Domain.Aggregates;
+using Rides.Persistence.Views;
 
 namespace Rides.Persistence;
 
@@ -10,15 +11,19 @@ internal static class DbNamesMapper
 
     static DbNamesMapper()
     {
-        Map<Ride>("rides", "rides", "ride");
+        Map<Domain.Aggregates.Ride, Views.Ride>("rides", "rides", "ride");
     }
 
-    public static void Map<T>(string writeCollectionName, string readCollectionName, string aggregateName) where T : Aggregate
+    public static void Map<TAgg, TView>(string writeCollectionName, string readCollectionName, string aggregateName)
+        where TAgg : Aggregate
+        where TView : ViewBase
     {
-        var type = typeof(T);
-        WriteCollectionNameMap.Add(type, writeCollectionName);
-        ReadCollectionNameMap.Add(type, readCollectionName);
-        AggregateNameMap.Add(type, aggregateName);
+        var aggregateType = typeof(TAgg);
+        var viewType = typeof(TView);
+
+        WriteCollectionNameMap.Add(aggregateType, writeCollectionName);
+        ReadCollectionNameMap.Add(viewType, readCollectionName);
+        AggregateNameMap.Add(aggregateType, aggregateName);
     }
 
     public static string GetWriteCollectionName<T>() where T : Aggregate
@@ -26,7 +31,7 @@ internal static class DbNamesMapper
         return WriteCollectionNameMap[typeof(T)];
     }
     
-    public static string GetReadCollectionName<T>() where T : Aggregate
+    public static string GetReadCollectionName<T>() where T : ViewBase
     {
         return ReadCollectionNameMap[typeof(T)];
     }

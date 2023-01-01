@@ -1,9 +1,9 @@
 using MongoDB.Driver;
 
-namespace Rides.Persistence.Services;
+namespace Rides.Persistence.Listeners;
 
 public static class ChangeStreamListenerFactory
 {
-    public static IChangeStreamListener CreateRideListener(IMongoClient mongoClient)
+    public static IChangeStreamListener CreateRidesListener(IMongoClient mongoClient)
         => new RidesChangesListener(mongoClient);
 }

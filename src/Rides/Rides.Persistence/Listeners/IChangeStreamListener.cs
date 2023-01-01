@@ -1,4 +1,4 @@
-namespace Rides.Persistence.Services;
+namespace Rides.Persistence.Listeners;
 
 public interface IChangeStreamListener
 {

@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
@@ -19,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Rides.Persistence\Rides.Persistence.csproj" />
+      <ProjectReference Include="..\Rides.Services\Rides.Services.csproj" />
     </ItemGroup>
 
 </Project>
