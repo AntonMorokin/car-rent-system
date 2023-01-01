@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using Rides.Domain.Aggregates;
 
 namespace Rides.Domain.Events;
@@ -16,14 +18,16 @@ public static class RideEvents
 
             public DateTimeOffset CreatedTime { get; init; }
 
-            public RideStatus Status { get; set; }
+            [BsonRepresentation(BsonType.String)]
+            public RideStatus Status { get; init; }
         }
 
         public record RideStarted : DomainEventBase
         {
             public DateTimeOffset StartedTime { get; init; }
 
-            public RideStatus Status { get; set; }
+            [BsonRepresentation(BsonType.String)]
+            public RideStatus Status { get; init; }
         }
 
         public record RideFinished : DomainEventBase
@@ -32,7 +36,8 @@ public static class RideEvents
 
             public float OdometerReading { get; init; }
 
-            public RideStatus Status { get; set; }
+            [BsonRepresentation(BsonType.String)]
+            public RideStatus Status { get; init; }
         }
 
         public record RideCancelled : DomainEventBase
@@ -41,7 +46,8 @@ public static class RideEvents
 
             public string Reason { get; init; }
 
-            public RideStatus Status { get; set; }
+            [BsonRepresentation(BsonType.String)]
+            public RideStatus Status { get; init; }
         }
     }
 }

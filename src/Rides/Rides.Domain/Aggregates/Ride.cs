@@ -17,8 +17,6 @@ public class Ride : Aggregate
     public DateTimeOffset? FinishedTime { get; private set; }
     public float? OdometerReading { get; private set; }
     public string? CancellationReason { get; private set; }
-
-    [BsonRepresentation(BsonType.String)]
     public RideStatus Status { get; private set; }
 
     public static Ride Create(string id, string clientId, string carId, DateTimeOffset createdTime)
