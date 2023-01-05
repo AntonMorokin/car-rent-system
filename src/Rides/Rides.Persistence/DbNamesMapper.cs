@@ -12,9 +12,10 @@ internal static class DbNamesMapper
     static DbNamesMapper()
     {
         Map<Domain.Aggregates.Ride, Views.Ride>("rides", "rides", "ride");
+        Map<Domain.Aggregates.Car, Views.Car>("cars", "cars", "car");
     }
 
-    public static void Map<TAgg, TView>(string writeCollectionName, string readCollectionName, string aggregateName)
+    private static void Map<TAgg, TView>(string writeCollectionName, string readCollectionName, string aggregateName)
         where TAgg : Aggregate
         where TView : ViewBase
     {

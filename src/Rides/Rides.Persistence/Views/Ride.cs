@@ -64,6 +64,9 @@ public sealed class Ride : ViewBase<Domain.Model.Ride>
                 CancellationReason = cancelled.Reason;
                 Status = cancelled.Status.ToString();
                 break;
+            default:
+                throw new NotSupportedException(
+                    $"The view {nameof(Ride)} can't process event {evt?.GetType().FullName}");
         }
     }
 }

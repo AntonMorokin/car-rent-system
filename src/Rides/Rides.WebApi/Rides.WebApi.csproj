@@ -19,6 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Rides.Messaging\Rides.Messaging.csproj" />
       <ProjectReference Include="..\Rides.Persistence\Rides.Persistence.csproj" />
       <ProjectReference Include="..\Rides.Services\Rides.Services.csproj" />
     </ItemGroup>

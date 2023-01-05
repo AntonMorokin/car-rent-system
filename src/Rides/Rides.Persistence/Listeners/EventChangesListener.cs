@@ -40,21 +40,16 @@ internal sealed class EventChangesListener<TAgg, TView> : IChangeStreamListener,
     {
         var options = await GetOptionsAsync();
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<EventEnvelope>>()
-            .Match(d => d.OperationType == ChangeStreamOperationType.Insert
-                        || d.OperationType == ChangeStreamOperationType.Update);
+            .Match(d => d.OperationType == ChangeStreamOperationType.Insert);
 
         _changeStream = await _events.WatchAsync(pipeline, options, _cts.Token);
 
         while (!_cts.IsCancellationRequested)
         {
             while (!_cts.IsCancellationRequested
-                   && await _changeStream.MoveNextAsync(_cts.Token))
+                   && await _changeStream.MoveNextAsync(_cts.Token)
+                   && _changeStream.Current.Any())
             {
-                if (!_changeStream.Current.Any())
-                {
-                    await Task.Delay(DelayTimeoutInMs, _cts.Token);
-                }
-
                 foreach (var change in _changeStream.Current)
                 {
                     var aggregateId = change.FullDocument.Meta.AggregateId;

@@ -2,6 +2,7 @@ using Common.Initialization.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Clients.WebApi
 {
@@ -12,6 +13,9 @@ namespace Clients.WebApi
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Configuration.AddEnvironmentVariables("CLIENTS_");
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
 
             builder.Services.AddFromInitializers(builder.Configuration,
                 new Services.ServiceInitializer(),

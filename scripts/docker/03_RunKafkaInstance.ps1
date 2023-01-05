@@ -1,0 +1,15 @@
+docker run --name kafka-standalone `
+    -p 9093:9093 `
+    -e KAFKA_BROKER_ID=1 `
+    -e ALLOW_PLAINTEXT_LISTENER=yes `
+    -e KAFKA_ENABLE_KRAFT=yes `
+    -e KAFKA_CFG_PROCESS_ROLES=broker,controller `
+    -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER `
+    -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9094 `
+    -e KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://docker-local:9093,CONTROLLER://:9094 `
+    -e KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092,EXTERNAL://docker-local:9093 `
+    -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT `
+    -e KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT `
+    -v D:\repos\ContainersData\kafka:/bitnami/kafka `
+    --rm `
+    bitnami/kafka:3.3.1

@@ -7,9 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.Initialization\Common.Initialization.csproj" />
+      <ProjectReference Include="..\..\Core\Core.Messaging.Events\Core.Messaging.Events.csproj" />
       <ProjectReference Include="..\..\Core\Core.Messaging\Core.Messaging.csproj" />
-      <ProjectReference Include="..\Cars.Database\Cars.Database.csproj" />
-      <ProjectReference Include="..\Cars.Model\Cars.Model.csproj" />
+      <ProjectReference Include="..\Rides.Persistence\Rides.Persistence.csproj" />
     </ItemGroup>
 
 </Project>

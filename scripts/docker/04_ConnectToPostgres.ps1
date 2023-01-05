@@ -1,0 +1,1 @@
+docker exec -i pgsql-standalone psql -U postgres -W -d crs

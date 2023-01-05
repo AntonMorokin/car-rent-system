@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Cars.Database\Cars.Database.csproj" />
+      <ProjectReference Include="..\Cars.Messaging\Cars.Messaging.csproj" />
       <ProjectReference Include="..\Cars.Services\Cars.Services.csproj" />
     </ItemGroup>
 

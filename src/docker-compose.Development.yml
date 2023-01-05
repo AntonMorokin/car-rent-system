@@ -21,9 +21,29 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - D:\repos\ContainersData\mongo\db:/data/db
-      - D:\repos\ContainersData\mongo\configdb:/data/configdb
-    command: --noauth --replicaSet crs
+      - D:\repos\ContainersData\mongo\compose\db:/data/db
+      - D:\repos\ContainersData\mongo\compose\configdb:/data/configdb
+    command: "--noauth --replSet crs"
+  
+  kafka:
+    container_name: kafka
+    image: bitnami/kafka:3.3.1
+    ports:
+      - "9093:9093"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9094
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://kafka:9093,CONTROLLER://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092,EXTERNAL://kafka:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - KAFKA_CFG_NUM_PARTITIONS=2
+    volumes:
+      - D:\repos\ContainersData\kafka:/bitnami/kafka
 
   clients.webapi:
     container_name: clients-webapi
@@ -37,6 +57,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
       - CLIENTS_Db__ConnectionString=Host=postgres;Database=crs;Username=postgres;Password=1234
+      - CLIENTS_Kafka__Address=kafka:9093
     ports:
       - "5000:5000"
 
@@ -48,10 +69,13 @@ services:
       dockerfile: Cars/Cars.WebApi/Dockerfile
     depends_on:
       - postgres
+      - kafka
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:6000
+      - CARS_Logging__LogLevel__Default=Debug
       - CARS_Db__ConnectionString=Host=postgres;Database=crs;Username=postgres;Password=1234
+      - CARS_Kafka__Address=kafka:9093
     ports:
       - "6000:6000"
 
@@ -63,9 +87,12 @@ services:
       dockerfile: Rides/Rides.WebApi/Dockerfile
     depends_on:
       - mongo
+      - kafka
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:7000
+      - RIDES_Logging__LogLevel__Default=Debug
       - RIDES_Db__ConnectionString=mongodb://mongo:27017/?replicaSet=crs
+      - RIDES_Kafka__Address=kafka:9093
     ports:
       - "7000:7000"

@@ -1,20 +1,39 @@
 using Cars.Database;
 using Cars.Model;
+using Core.Messaging;
 
 namespace Cars.Services;
 
 internal sealed class CarsService : ICarsService
 {
     private readonly ICarsRepository _carsRepository;
+    private readonly IMessageProducer _messageProducer;
 
-    public CarsService(ICarsRepository carsRepository)
+    public CarsService(ICarsRepository carsRepository, IMessageProducer messageProducer)
     {
         _carsRepository = carsRepository;
+        _messageProducer = messageProducer;
     }
 
-    public Task<string> CreateNewCarAsync(string number, string brand, string model, float mileage, CancellationToken cancellationToken)
+    public async Task<string> CreateNewCarAsync(string number,
+        string brand,
+        string model,
+        float mileage,
+        CancellationToken cancellationToken)
     {
-        return _carsRepository.CreateNewCarAsync(number, brand, model, mileage, cancellationToken);
+        var carId = await _carsRepository.CreateNewCarAsync(number, brand, model, mileage, cancellationToken);
+
+        var evt = new Core.Messaging.Events.CarEvents.V1.CarCreated
+        {
+            CarId = carId,
+            Brand = brand,
+            Model = model,
+            Number = number
+        };
+
+        await _messageProducer.SendAsync(Consts.Topics.Cars, evt);
+
+        return carId;
     }
 
     public Task<Car> GetCarByIdAsync(string id, CancellationToken cancellationToken)

@@ -10,7 +10,8 @@ public sealed class ServiceInitializer : IServiceInitializer
     public void Register(IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var connectionString = configuration["Db:ConnectionString"]
-                               ?? throw new InvalidOperationException("No connection string configuration");
+                               ?? throw new InvalidOperationException(
+                                   "In configuration there is no connection string for the DB");
 
         serviceCollection.AddSingleton<ICarsRepository>(new CarsRepository(connectionString));
     }
