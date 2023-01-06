@@ -1,20 +1,20 @@
 using MediatR;
-using Rides.Domain.Model;
+using Rides.Domain.Views;
 using Rides.Services.Queries;
 
 namespace Rides.Services.Handlers;
 
 internal sealed class GetRideByIdQueryHandler : IRequestHandler<GetRideByIdQuery, Ride>
 {
-    private readonly IRidesReadService _readService;
+    private readonly IRidesService _ridesService;
 
-    public GetRideByIdQueryHandler(IRidesReadService readService)
+    public GetRideByIdQueryHandler(IRidesService ridesService)
     {
-        _readService = readService;
+        _ridesService = ridesService;
     }
 
     public Task<Ride> Handle(GetRideByIdQuery request, CancellationToken cancellationToken)
     {
-        return _readService.GetRideByIdAsync(request.RideId);
+        return _ridesService.GetRideByIdAsync(request.RideId);
     }
 }

@@ -1,11 +1,11 @@
-using Rides.Persistence.Views;
+using Rides.Domain.Views;
 
 namespace Rides.Persistence;
 
 public interface IViewStore<TView>
-    where TView : ViewBase, new()
+    where TView : ViewBase
 {
-    Task<TView?> LoadViewByIdAsync(string aggregateId);
+    Task<TView?> LoadViewByIdOrDefaultAsync(string aggregateId);
 
     Task StoreViewAsync(TView view);
 }

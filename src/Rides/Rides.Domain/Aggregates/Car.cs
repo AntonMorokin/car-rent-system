@@ -9,6 +9,8 @@ public sealed class Car : Aggregate
 
     public override string Id => _id;
 
+    public string? RideId { get; set; }
+
     public CarStatus Status { get; set; }
 
     public static Car Create(string id)
@@ -25,7 +27,7 @@ public sealed class Car : Aggregate
         return inst;
     }
 
-    public void StartRide()
+    public void StartRide(string rideId)
     {
         if (Status != CarStatus.Ready)
         {
@@ -35,6 +37,7 @@ public sealed class Car : Aggregate
 
         Apply(new CarEvents.V1.CarHeld
         {
+            RideId = rideId,
             Status = CarStatus.Busy
         });
     }

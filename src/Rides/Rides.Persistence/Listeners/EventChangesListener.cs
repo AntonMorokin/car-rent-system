@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Rides.Domain.Aggregates;
+using Rides.Domain.Views;
 using Rides.Persistence.Events;
 using Rides.Persistence.Views;
 
@@ -114,7 +115,7 @@ internal sealed class EventChangesListener<TAgg, TView> : IChangeStreamListener,
 
     private async Task<TView> GetViewByIdAsync(string aggregateId)
     {
-        var view = await _viewStore.LoadViewByIdAsync(aggregateId);
+        var view = await _viewStore.LoadViewByIdOrDefaultAsync(aggregateId);
 
         return view ?? new TView
         {

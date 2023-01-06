@@ -22,16 +22,14 @@ internal sealed class CarsService : ICarsService
         CancellationToken cancellationToken)
     {
         var carId = await _carsRepository.CreateNewCarAsync(number, brand, model, mileage, cancellationToken);
-
-        var evt = new Core.Messaging.Events.CarEvents.V1.CarCreated
+        
+        await _messageProducer.SendAsync(Consts.Topics.Cars, new Core.Messaging.Events.CarEvents.V1.CarCreated
         {
             CarId = carId,
             Brand = brand,
             Model = model,
             Number = number
-        };
-
-        await _messageProducer.SendAsync(Consts.Topics.Cars, evt);
+        });
 
         return carId;
     }

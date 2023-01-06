@@ -1,5 +1,3 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using Rides.Domain.Events;
 using Rides.Domain.Exceptions;
 
@@ -19,24 +17,32 @@ public class Ride : Aggregate
     public string? CancellationReason { get; private set; }
     public RideStatus Status { get; private set; }
 
-    public static Ride Create(string id, string clientId, string carId, DateTimeOffset createdTime)
+    public static Ride Create(string id,
+        string clientId,
+        Car car,
+        DateTimeOffset createdTime)
     {
+        if (car.Status != CarStatus.Ready)
+        {
+            throw new DomainException(
+                $"The ride with id={id} can't be started because the car with id={car.Id} isn't ready");
+        }
+
         var inst = new Ride();
         var evt = new RideEvents.V1.RideCreated
         {
             RideId = id,
             ClientId = clientId,
-            CarId = carId,
+            CarId = car.Id,
             CreatedTime = createdTime,
             Status = RideStatus.Created
         };
 
         inst.Apply(evt);
-
         return inst;
     }
 
-    public void Start(DateTimeOffset startedTime)
+    public void Start(Car car, DateTimeOffset startedTime)
     {
         if (Status != RideStatus.Created)
         {
@@ -47,6 +53,13 @@ public class Ride : Aggregate
         if (startedTime < CreatedTime)
         {
             throw new DomainException("Ride start time can't be less than creation time");
+        }
+
+        if (!(car.Status == CarStatus.Busy
+              && car.RideId == Id))
+        {
+            throw new DomainException(
+                $"The car with id={CarId} wasn't held yet for the ride with id={Id}");
         }
 
         Apply(new RideEvents.V1.RideStarted

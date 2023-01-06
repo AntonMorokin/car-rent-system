@@ -5,7 +5,6 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Rides.Domain.Events;
 using Rides.Persistence.Serialization;
-using Rides.Persistence.Views;
 
 namespace Rides.Persistence;
 
@@ -24,10 +23,5 @@ public sealed class ServiceInitializer : IServiceInitializer
 
         serviceCollection.AddSingleton(typeof(IEventStore<>), typeof(EventStore<>));
         serviceCollection.AddSingleton(typeof(IViewStore<>), typeof(ViewStore<>));
-        serviceCollection.AddSingleton<IModelReader<Domain.Model.Ride>>(p =>
-        {
-            var viewReader = p.GetRequiredService<IViewStore<Ride>>();
-            return new ModelReader<Ride, Domain.Model.Ride>(viewReader);
-        });
     }
 }

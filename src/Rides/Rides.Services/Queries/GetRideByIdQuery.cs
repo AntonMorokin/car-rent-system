@@ -1,5 +1,5 @@
 using MediatR;
-using Rides.Domain.Model;
+using Rides.Domain.Views;
 
 namespace Rides.Services.Queries;
 

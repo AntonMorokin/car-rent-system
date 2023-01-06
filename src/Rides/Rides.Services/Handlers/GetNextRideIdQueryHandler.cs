@@ -5,15 +5,15 @@ namespace Rides.Services.Handlers;
 
 internal sealed class GetNextRideIdQueryHandler : IRequestHandler<GetNextRideIdQuery, string>
 {
-    private readonly IRidesReadService _readService;
+    private readonly IRidesService _ridesService;
 
-    public GetNextRideIdQueryHandler(IRidesReadService readService)
+    public GetNextRideIdQueryHandler(IRidesService ridesService)
     {
-        _readService = readService;
+        _ridesService = ridesService;
     }
 
     public Task<string> Handle(GetNextRideIdQuery request, CancellationToken cancellationToken)
     {
-        return _readService.GetNextIdAsync();
+        return _ridesService.GetNextIdAsync();
     }
 }

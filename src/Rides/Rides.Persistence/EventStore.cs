@@ -24,6 +24,7 @@ internal sealed class EventStore<T> : IEventStore<T> where T : Aggregate, new()
 
     public async Task<string> GetNextIdAsync()
     {
+        // TODO it needs to return unique id every call
         var lastId = await _events
             .Find(Builders<EventEnvelope>.Filter.Empty)
             .SortByDescending(e => e.Meta.AggregateId)

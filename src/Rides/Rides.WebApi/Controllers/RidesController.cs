@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Rides.Domain.Exceptions;
-using Rides.Domain.Model;
+using Rides.Domain.Views;
 using Rides.Services.Commands;
 using Rides.Services.Queries;
 using Rides.WebApi.Contract.Requests;
@@ -94,7 +94,7 @@ public sealed class RidesController : ControllerBase
         }
     }
 
-    private static RideResponse CreateResponse(Ride ride) => new(ride.RideId,
+    private static RideResponse CreateResponse(Ride ride) => new(ride.AggregateId,
         ride.ClientId,
         ride.CarId,
         ride.Status,

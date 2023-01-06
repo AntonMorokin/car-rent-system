@@ -1,10 +1,10 @@
 using MongoDB.Driver;
-using Rides.Persistence.Views;
+using Rides.Domain.Views;
 
 namespace Rides.Persistence;
 
 internal sealed class ViewStore<TView> : IViewStore<TView>
-    where TView : ViewBase, new()
+    where TView : ViewBase
 {
     private readonly IMongoCollection<TView> _views;
 
@@ -16,7 +16,7 @@ internal sealed class ViewStore<TView> : IViewStore<TView>
         _views = readDb.GetCollection<TView>(readCollectionName);
     }
 
-    public async Task<TView?> LoadViewByIdAsync(string aggregateId)
+    public async Task<TView?> LoadViewByIdOrDefaultAsync(string aggregateId)
     {
         return await _views
             .Find(m => m.AggregateId == aggregateId)

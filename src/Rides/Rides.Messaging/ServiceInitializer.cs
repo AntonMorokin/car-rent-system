@@ -29,7 +29,7 @@ public sealed class ServiceInitializer : IServiceInitializer
             var eventStore = p.GetRequiredService<IEventStore<Domain.Aggregates.Car>>();
             var loggerFactory = p.GetRequiredService<ILoggerFactory>();
 
-            var handlers = MessageHandlersFactory.CreateCarsMessageHandlers(eventStore, loggerFactory);
+            var handlers = MessageHandlersFactory.CreateCarMessagesHandlers(eventStore, loggerFactory);
             var processor = MessageProcessorFactory.Create(handlers, loggerFactory);
 
             return new MessageConsumer(kafkaAddress,

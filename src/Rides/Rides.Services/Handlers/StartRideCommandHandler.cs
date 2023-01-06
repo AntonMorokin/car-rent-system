@@ -5,16 +5,16 @@ namespace Rides.Services.Handlers;
 
 internal sealed class StartRideCommandHandler : IRequestHandler<StartRideCommand>
 {
-    private readonly IRidesWriteService _writeService;
+    private readonly IRidesService _ridesService;
 
-    public StartRideCommandHandler(IRidesWriteService writeService)
+    public StartRideCommandHandler(IRidesService ridesService)
     {
-        _writeService = writeService;
+        _ridesService = ridesService;
     }
 
     public async Task<Unit> Handle(StartRideCommand request, CancellationToken cancellationToken)
     {
-        await _writeService.StartRideAsync(request.RideId, request.StartedTime);
+        await _ridesService.StartRideAsync(request.RideId, request.StartedTime);
         return Unit.Value;
     }
 }

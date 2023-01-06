@@ -5,16 +5,16 @@ namespace Rides.Services.Handlers;
 
 internal sealed class CreateNewRideCommandHandler : IRequestHandler<CreateNewRideCommand>
 {
-    private readonly IRidesWriteService _writeService;
+    private readonly IRidesService _ridesService;
 
-    public CreateNewRideCommandHandler(IRidesWriteService writeService)
+    public CreateNewRideCommandHandler(IRidesService ridesService)
     {
-        _writeService = writeService;
+        _ridesService = ridesService;
     }
 
     public async Task<Unit> Handle(CreateNewRideCommand request, CancellationToken cancellationToken)
     {
-        await _writeService.CreateRideAsync(request.RideId, request.ClientId, request.CarId, request.CreatedTime);
+        await _ridesService.CreateRideAsync(request.RideId, request.ClientId, request.CarId, request.CreatedTime);
         return Unit.Value;
     }
 }

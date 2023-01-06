@@ -5,6 +5,8 @@ internal static class Consts
     public static class Prefixes
     {
         public const string Car = "car-";
+
+        public const string Ride = "ride-";
     }
     
     public static class MessageNumbers

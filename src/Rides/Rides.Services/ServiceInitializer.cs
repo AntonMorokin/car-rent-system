@@ -10,9 +10,7 @@ public sealed class ServiceInitializer : IServiceInitializer
 {
     public void Register(IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddSingleton<IRidesReadService, RidesReadService>();
-        serviceCollection.AddSingleton<IRidesWriteService, RidesWriteService>();
-
+        serviceCollection.AddSingleton<IRidesService, RidesService>();
         serviceCollection.AddMediatR(Assembly.GetExecutingAssembly());
     }
 }

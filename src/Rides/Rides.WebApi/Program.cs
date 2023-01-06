@@ -32,13 +32,6 @@ namespace Rides.WebApi
                 var ridesListener = ChangeStreamListenerFactory.CreateRidesListener(mongoClient);
                 return new ChangeStreamListenerBackgroundService(ridesListener);
             });
-            
-            builder.Services.AddSingleton<IHostedService>(p =>
-            {
-                var mongoClient = p.GetRequiredService<IMongoClient>();
-                var ridesListener = ChangeStreamListenerFactory.CreateCarsListener(mongoClient);
-                return new ChangeStreamListenerBackgroundService(ridesListener);
-            });
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

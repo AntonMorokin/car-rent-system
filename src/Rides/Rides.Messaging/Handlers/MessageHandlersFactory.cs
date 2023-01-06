@@ -6,7 +6,7 @@ namespace Rides.Messaging.Handlers;
 
 internal static class MessageHandlersFactory
 {
-    public static IReadOnlyCollection<IMessageHandler> CreateCarsMessageHandlers(IEventStore<Domain.Aggregates.Car> carsEventStore,
+    public static IReadOnlyCollection<IMessageHandler> CreateCarMessagesHandlers(IEventStore<Domain.Aggregates.Car> carsEventStore,
         ILoggerFactory loggerFactory)
     {
         var handler = new CarMessagesHandler(carsEventStore, loggerFactory.CreateLogger<CarMessagesHandler>());

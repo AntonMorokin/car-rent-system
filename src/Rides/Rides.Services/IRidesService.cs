@@ -1,7 +1,11 @@
+using Rides.Domain.Views;
+
 namespace Rides.Services;
 
-internal interface IRidesWriteService
+public interface IRidesService
 {
+    Task<string> GetNextIdAsync();
+    Task<Ride> GetRideByIdAsync(string rideId);
     Task CreateRideAsync(string rideId, string clientId, string carId, DateTimeOffset createdTime);
     Task StartRideAsync(string rideId, DateTimeOffset startedTime);
 }

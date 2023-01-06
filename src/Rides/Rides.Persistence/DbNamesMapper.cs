@@ -1,5 +1,5 @@
 using Rides.Domain.Aggregates;
-using Rides.Persistence.Views;
+using Rides.Domain.Views;
 
 namespace Rides.Persistence;
 
@@ -11,8 +11,7 @@ internal static class DbNamesMapper
 
     static DbNamesMapper()
     {
-        Map<Domain.Aggregates.Ride, Views.Ride>("rides", "rides", "ride");
-        Map<Domain.Aggregates.Car, Views.Car>("cars", "cars", "car");
+        Map<Domain.Aggregates.Ride, Domain.Views.Ride>("rides", "rides", "ride");
     }
 
     private static void Map<TAgg, TView>(string writeCollectionName, string readCollectionName, string aggregateName)

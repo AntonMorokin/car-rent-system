@@ -34,7 +34,6 @@ internal sealed class CarMessagesHandler : IMessageHandler
                     var exists = await _eventStore.CheckIfAggregateExistsAsync(created.CarId);
                     if (exists)
                     {
-                        // TODO maybe needs to just return without throwing exceptions
                         throw new DomainException(
                             ErrorCodes.EntityAlreadyExists,
                             $"The car with id={created.CarId} already exists");
@@ -55,7 +54,7 @@ internal sealed class CarMessagesHandler : IMessageHandler
                     }
 
                     var car = await _eventStore.LoadAsync(held.CarId);
-                    car.StartRide();
+                    car.StartRide(held.RideId);
                     await _eventStore.StoreAsync(car);
                 }
                 break;
