@@ -12,6 +12,16 @@ internal static class DbNamesMapper
     static DbNamesMapper()
     {
         Map<Domain.Aggregates.Ride, Domain.Views.Ride>("rides", "rides", "ride");
+        Map<Car>("cars", "car");
+    }
+    
+    private static void Map<TAgg>(string writeCollectionName, string aggregateName)
+        where TAgg : Aggregate
+    {
+        var aggregateType = typeof(TAgg);
+
+        WriteCollectionNameMap.Add(aggregateType, writeCollectionName);
+        AggregateNameMap.Add(aggregateType, aggregateName);
     }
 
     private static void Map<TAgg, TView>(string writeCollectionName, string readCollectionName, string aggregateName)

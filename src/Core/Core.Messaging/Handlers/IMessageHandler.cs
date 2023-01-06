@@ -4,7 +4,7 @@ namespace Core.Messaging.Handlers;
 
 public interface IMessageHandler
 {
-    string Topic { get; }
+    string HandledTopic { get; }
 
     Task HandleAsync(IMessage message);
 }

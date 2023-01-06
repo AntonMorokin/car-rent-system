@@ -14,5 +14,6 @@ internal static class Consts
         public const int CarCreated = 0;
         public const int CarHeld = 1;
         public const int CarFreed = 2;
+        public const int RideCreated = 3;
     }
 }

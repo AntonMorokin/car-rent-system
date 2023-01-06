@@ -27,7 +27,8 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
         {
             AutoOffsetReset = AutoOffsetReset.Earliest,
             BootstrapServers = kafkaAddress,
-            GroupId = clientGroup
+            GroupId = clientGroup,
+            EnableAutoCommit = true
         };
 
         _messageProcessor = messageProcessor;
@@ -53,27 +54,34 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
         try
         {
             consumer.Subscribe(_messageProcessor.Topics);
-        
-            _logger.LogDebug(
+
+            _logger.LogInformation(
                 "Started listening for messages from topic {topics}",
                 string.Join(", ", _messageProcessor.Topics));
-            
+
             while (!_cts.IsCancellationRequested)
             {
                 var result = consumer.Consume(_cts.Token);
-                
+
                 _logger.LogDebug(
                     "Got message with key={key} from topic {topic}",
                     result.Message.Key,
                     result.Topic);
 
                 await _messageProcessor.HandleAsync(result.Topic, result.Message.Value);
-
-                consumer.StoreOffset(result);
             }
         }
         catch (OperationCanceledException)
         {
+            _logger.LogInformation("Listening was stopped");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error when listening for messages from {topics}",
+                string.Join(", ", _messageProcessor.Topics));
+
+            throw;
         }
         finally
         {

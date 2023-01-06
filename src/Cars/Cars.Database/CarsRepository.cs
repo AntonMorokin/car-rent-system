@@ -1,9 +1,11 @@
 using System;
 using System.Data;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cars.Model;
 using Dapper;
+using Microsoft.Extensions.Primitives;
 using Npgsql;
 
 namespace Cars.Database;
@@ -17,11 +19,15 @@ internal sealed class CarsRepository : ICarsRepository
         _connectionString = connectionString;
     }
 
-    public async Task<string> CreateNewCarAsync(string number, string brand, string model, float mileage,
+    public async Task<string> CreateNewCarAsync(string number,
+        string brand,
+        string model,
+        float mileage,
+        CarStatus status,
         CancellationToken cancellationToken)
     {
-        const string Command = "insert into cars_ms.cars(number, brand, model, mileage)"
-                               + " values(@number, @brand, @model, @mileage) returning id";
+        const string Command = "insert into cars_ms.cars(number, brand, model, mileage, status)"
+                               + " values(@number, @brand, @model, @mileage, @status) returning id";
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -31,7 +37,8 @@ internal sealed class CarsRepository : ICarsRepository
             number,
             brand,
             model,
-            mileage
+            mileage,
+            status = status.ToString()
         };
 
         return await connection.QuerySingleAsync<string>(Command, @params);
@@ -40,7 +47,8 @@ internal sealed class CarsRepository : ICarsRepository
     public async Task<Car> GetCarByIdAsync(string id, CancellationToken cancellationToken)
     {
         const string Command =
-            "select id as \"Id\", number as \"Number\", brand as \"Brand\", model as \"Model\", mileage as \"Mileage\""
+            "select id as \"Id\", number as \"Number\", brand as \"Brand\","
+            + " model as \"Model\", mileage as \"Mileage\", status as \"Status\""
             + " from cars_ms.cars where id = @id";
         
         await using var connection = new NpgsqlConnection(_connectionString);
@@ -81,14 +89,16 @@ internal sealed class CarsRepository : ICarsRepository
             Number = car.Number,
             Brand = car.Brand,
             Model = car.Model,
-            Mileage = car.Mileage
+            Mileage = car.Mileage,
+            Status = Enum.Parse<CarStatus>(car.Status)
         };
     }
 
     public async Task<Car> GetCarByNumberAsync(string number, CancellationToken cancellationToken)
     {
         const string Command =
-            "select id as \"Id\", number as \"Number\", brand as \"Brand\", model as \"Model\", mileage as \"Mileage\""
+            "select id as \"Id\", number as \"Number\", brand as \"Brand\","
+            + " model as \"Model\", mileage as \"Mileage\", status as \"Status\""
             + " from cars_ms.cars where number = @number";
         
         await using var connection = new NpgsqlConnection(_connectionString);
@@ -100,5 +110,67 @@ internal sealed class CarsRepository : ICarsRepository
         };
 
         return await GetSingleCarWithCheckingAsync(connection, Command, @params, $"number={number}", nameof(number));
+    }
+
+    public async Task UpdateCarAsync(string carId,
+        string? number,
+        string? brand,
+        string? model,
+        float? mileage,
+        CarStatus? status,
+        CancellationToken cancellationToken)
+    {
+        (string, DynamicParameters) BuildCommandAndParameters()
+        {
+            var sb = new StringBuilder("update cars_ms.cars set");
+            var parameters = new DynamicParameters();
+
+            if (number is not null)
+            {
+                sb.Append(" number = @number,");
+                parameters.Add("number", number);
+            }
+            
+            if (brand is not null)
+            {
+                sb.Append(" brand = @brand,");
+                parameters.Add("brand", brand);
+            }
+
+            if (model is not null)
+            {
+                sb.Append(" model = @model,");
+                parameters.Add("model", model);
+            }
+
+            if (mileage is not null)
+            {
+                sb.Append(" mileage = @mileage,");
+                parameters.Add("mileage", mileage);
+            }
+
+            if (status is not null)
+            {
+                sb.Append(" status = @status");
+                parameters.Add("status", status.ToString());
+            }
+
+            if (sb[^1] == ',')
+            {
+                sb.Length--;
+            }
+
+            sb.Append(" where id = @id");
+            parameters.Add("id", Convert.ToInt32(carId));
+
+            return (sb.ToString(), parameters);
+        }
+
+        var (command, @params) = BuildCommandAndParameters();
+        
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await connection.ExecuteAsync(command, @params);
     }
 }

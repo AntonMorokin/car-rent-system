@@ -42,7 +42,7 @@ public sealed class CarsController : ControllerBase
             ? await _carsService.GetCarByNumberAsync(number!, cancellationToken)
             : await _carsService.GetCarByIdAsync(id!, cancellationToken);
 
-        var response = new CarResponse(car.Id, car.Number, car.Brand, car.Model, car.Mileage);
+        var response = new CarResponse(car.Id, car.Number, car.Brand, car.Model, car.Mileage, car.Status.ToString());
         return Ok(response);
     }
 }

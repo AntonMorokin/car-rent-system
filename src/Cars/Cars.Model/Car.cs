@@ -11,4 +11,6 @@ public class Car
     public string Model { get; set; }
 
     public float Mileage { get; set; }
+
+    public CarStatus Status { get; set; }
 }

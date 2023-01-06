@@ -13,4 +13,5 @@ public interface ICarsService
     Task<Car> GetCarByIdAsync(string id, CancellationToken cancellationToken);
 
     Task<Car> GetCarByNumberAsync(string number, CancellationToken cancellationToken);
+    Task UseInRideAsync(string carId, string rideId, CancellationToken cancellationToken);
 }

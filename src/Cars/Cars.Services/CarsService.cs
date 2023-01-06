@@ -1,6 +1,7 @@
 using Cars.Database;
 using Cars.Model;
 using Core.Messaging;
+using Core.Messaging.Events;
 
 namespace Cars.Services;
 
@@ -21,9 +22,14 @@ internal sealed class CarsService : ICarsService
         float mileage,
         CancellationToken cancellationToken)
     {
-        var carId = await _carsRepository.CreateNewCarAsync(number, brand, model, mileage, cancellationToken);
+        var carId = await _carsRepository.CreateNewCarAsync(number,
+            brand,
+            model,
+            mileage,
+            CarStatus.Ready,
+            cancellationToken);
         
-        await _messageProducer.SendAsync(Consts.Topics.Cars, new Core.Messaging.Events.CarEvents.V1.CarCreated
+        await _messageProducer.SendAsync(Consts.Topics.Cars, new CarEvents.V1.CarCreated
         {
             CarId = carId,
             Brand = brand,
@@ -42,5 +48,29 @@ internal sealed class CarsService : ICarsService
     public Task<Car> GetCarByNumberAsync(string number, CancellationToken cancellationToken)
     {
         return _carsRepository.GetCarByNumberAsync(number, cancellationToken);
+    }
+
+    public async Task UseInRideAsync(string carId, string rideId, CancellationToken cancellationToken)
+    {
+        var car = await GetCarByIdAsync(carId, cancellationToken);
+        if (car.Status != CarStatus.Ready)
+        {
+            throw new InvalidOperationException(
+                $"The car with id={car.Id} isn't ready to be used in the ride with id={rideId}");
+        }
+
+        await _carsRepository.UpdateCarAsync(carId,
+            null,
+            null,
+            null,
+            null,
+            status: CarStatus.InRide,
+            cancellationToken: cancellationToken);
+
+        await _messageProducer.SendAsync(Consts.Topics.Cars, new CarEvents.V1.CarHeld
+        {
+            CarId = car.Id,
+            RideId = rideId
+        });
     }
 }

@@ -18,7 +18,7 @@ internal sealed class CarMessagesHandler : IMessageHandler
         _logger = logger;
     }
 
-    public string Topic => Core.Messaging.Consts.Topics.Cars;
+    public string HandledTopic => Core.Messaging.Consts.Topics.Cars;
 
     public async Task HandleAsync(IMessage message)
     {

@@ -6,6 +6,7 @@ public static class RideEvents
 {
     public static class V1
     {
+        [MessagePackObject]
         public sealed class RideCreated : IMessage
         {
             [IgnoreMember]

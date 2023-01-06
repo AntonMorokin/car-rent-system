@@ -12,7 +12,7 @@ internal sealed class MessageProcessor : IMessageProcessor
 
     public MessageProcessor(IReadOnlyCollection<IMessageHandler> handlers, ILogger<MessageProcessor> logger)
     {
-        _handlers = handlers.ToLookup(h => h.Topic);
+        _handlers = handlers.ToLookup(h => h.HandledTopic);
         Topics = _handlers.Select(x => x.Key).ToArray();
         _logger = logger;
     }
@@ -33,9 +33,17 @@ internal sealed class MessageProcessor : IMessageProcessor
             return;
         }
 
-        foreach (var handler in _handlers[topic])
+        try
         {
-            await handler.HandleAsync(message);
+            foreach (var handler in _handlers[topic])
+            {
+                await handler.HandleAsync(message);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error when handling message");
+            throw;
         }
 
         _logger.LogDebug(

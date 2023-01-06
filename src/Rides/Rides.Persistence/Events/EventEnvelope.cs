@@ -33,7 +33,7 @@ internal sealed class EventEnvelope
             {
                 AggregateId = aggregate.Id,
                 AggregateVersion = aggregateVersion,
-                EventType = typeof(T).FullName!
+                EventType = evt.GetType().FullName!
             },
             Payload = evt
         };

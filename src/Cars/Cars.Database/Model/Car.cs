@@ -11,4 +11,6 @@ internal sealed class Car
     public string Model { get; set; }
 
     public float Mileage { get; set; }
+
+    public string Status { get; set; }
 }

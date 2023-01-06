@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Initialization\Common.Initialization.csproj" />
       <ProjectReference Include="..\..\Core\Core.Messaging\Core.Messaging.csproj" />
+      <ProjectReference Include="..\Cars.Services\Cars.Services.csproj" />
     </ItemGroup>
 
 </Project>
