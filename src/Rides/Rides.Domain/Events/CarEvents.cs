@@ -18,7 +18,7 @@ public static class CarEvents
 
         public record CarHeld : DomainEventBase 
         {
-            public string? RideId { get; set; }
+            public string RideId { get; set; }
 
             [BsonRepresentation(BsonType.String)]
             public CarStatus Status { get; set; }

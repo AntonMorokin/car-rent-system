@@ -64,9 +64,11 @@ public sealed class Car : Aggregate
                 Status = created.Status;
                 break;
             case CarEvents.V1.CarHeld held:
+                RideId = held.RideId;
                 Status = held.Status;
                 break;
             case CarEvents.V1.CarFreed freed:
+                RideId = null;
                 Status = freed.Status;
                 break;
             default:

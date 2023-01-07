@@ -7,6 +7,8 @@ internal static class Consts
         public const string Car = "car-";
 
         public const string Ride = "ride-";
+
+        public const string Client = "client-";
     }
     
     public static class MessageNumbers
@@ -15,5 +17,9 @@ internal static class Consts
         public const int CarHeld = 1;
         public const int CarFreed = 2;
         public const int RideCreated = 3;
+        public const int RideStarted = 4;
+        public const int RideFinished = 5;
+        public const int RideCancelled = 6;
+        public const int ClientCreated = 7;
     }
 }

@@ -13,6 +13,7 @@ internal static class DbNamesMapper
     {
         Map<Domain.Aggregates.Ride, Domain.Views.Ride>("rides", "rides", "ride");
         Map<Car>("cars", "car");
+        Map<Client>("clients", "client");
     }
     
     private static void Map<TAgg>(string writeCollectionName, string aggregateName)

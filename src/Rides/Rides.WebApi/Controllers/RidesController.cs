@@ -90,7 +90,53 @@ public sealed class RidesController : ControllerBase
         }
         catch (DomainException ex) when (ex.ErrorCode == ErrorCodes.EntityNotFound)
         {
-            return Conflict(ex.Message);
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpPut("finish")]
+    public async Task<IActionResult> FinishRideAsync([FromBody] FinishRideRequest request)
+    {
+        try
+        {
+            var command = new FinishRideCommand
+            {
+                RideId = request.RideId,
+                FinishedTime = request.FinishedTime,
+                OdometerReading = request.OdometerReading
+            };
+
+            await _mediator.Send(command);
+
+            var url = Url.Action("GetRideById", new { id = request.RideId });
+            return Accepted(url);
+        }
+        catch (DomainException ex) when (ex.ErrorCode == ErrorCodes.EntityNotFound)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpPut("cancel")]
+    public async Task<IActionResult> CancelRideAsync([FromBody] CancelRideRequest request)
+    {
+        try
+        {
+            var command = new CancelRideCommand
+            {
+                RideId = request.RideId,
+                CancelledTime = request.CancelledTime,
+                Reason = request.Reason
+            };
+
+            await _mediator.Send(command);
+
+            var url = Url.Action("GetRideById", new { id = request.RideId });
+            return Accepted(url);
+        }
+        catch (DomainException ex) when (ex.ErrorCode == ErrorCodes.EntityNotFound)
+        {
+            return NotFound(ex.Message);
         }
     }
 

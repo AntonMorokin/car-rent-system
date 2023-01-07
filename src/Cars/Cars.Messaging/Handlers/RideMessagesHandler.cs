@@ -24,14 +24,19 @@ internal sealed class RideMessagesHandler : IMessageHandler
         _logger.LogDebug(
             "Got for handling message with key={key} of type {type}",
             message.Key,
-            message?.GetType().FullName);
+            message.GetType().FullName);
 
-        switch (message)
+        return message switch
         {
-            case RideEvents.V1.RideCreated created:
-                return _carsService.UseInRideAsync(created.CarId, created.RideId, CancellationToken.None);
-            default:
-                return Task.CompletedTask;
-        }
+            RideEvents.V1.RideCreated created => _carsService.UseCarInRideAsync(created.CarId,
+                created.RideId,
+                CancellationToken.None),
+            RideEvents.V1.RideFinished finished => _carsService.FinishRideAsync(finished.CarId,
+                finished.OdometerReading,
+                CancellationToken.None),
+            RideEvents.V1.RideCancelled cancelled => _carsService.CancelRideAsync(cancelled.CarId,
+                CancellationToken.None),
+            _ => Task.CompletedTask
+        };
     }
 }

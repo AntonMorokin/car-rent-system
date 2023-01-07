@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Initialization\Common.Initialization.csproj" />
+      <ProjectReference Include="..\..\Core\Core.Messaging\Core.Messaging.csproj" />
       <ProjectReference Include="..\Clients.Database\Clients.Database.csproj" />
       <ProjectReference Include="..\Clients.Model\Clients.Model.csproj" />
     </ItemGroup>

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rides.Messaging.Handlers;
-using Rides.Persistence;
+using Rides.Messaging.Services;
 
 namespace Rides.Messaging;
 
@@ -24,12 +24,19 @@ public sealed class ServiceInitializer : IServiceInitializer
             return new MessageProducer(kafkaAddress, logger);
         });
 
+        serviceCollection.AddSingleton<ICarsService, CarsService>();
+        serviceCollection.AddSingleton<IClientsService, ClientsService>();
+
         serviceCollection.AddSingleton<IMessageConsumer>(p =>
         {
-            var eventStore = p.GetRequiredService<IEventStore<Domain.Aggregates.Car>>();
+            var carsService = p.GetRequiredService<ICarsService>();
+            var clientsService = p.GetRequiredService<IClientsService>();
             var loggerFactory = p.GetRequiredService<ILoggerFactory>();
 
-            var handlers = MessageHandlersFactory.CreateCarMessagesHandlers(eventStore, loggerFactory);
+            var handlers = MessageHandlersFactory.CreateCarMessagesHandlers(carsService,
+                clientsService,
+                loggerFactory);
+
             var processor = MessageProcessorFactory.Create(handlers, loggerFactory);
 
             return new MessageConsumer(kafkaAddress,

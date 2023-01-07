@@ -50,7 +50,7 @@ internal sealed class CarsService : ICarsService
         return _carsRepository.GetCarByNumberAsync(number, cancellationToken);
     }
 
-    public async Task UseInRideAsync(string carId, string rideId, CancellationToken cancellationToken)
+    public async Task UseCarInRideAsync(string carId, string rideId, CancellationToken cancellationToken)
     {
         var car = await GetCarByIdAsync(carId, cancellationToken);
         if (car.Status != CarStatus.Ready)
@@ -71,6 +71,43 @@ internal sealed class CarsService : ICarsService
         {
             CarId = car.Id,
             RideId = rideId
+        });
+    }
+
+    public async Task FinishRideAsync(string carId, float odometerReading, CancellationToken cancellationToken)
+    {
+        var car = await GetCarByIdAsync(carId, cancellationToken);
+
+        if (odometerReading < car.Mileage)
+        {
+            throw new InvalidOperationException(
+                "Odometer reading after a ride can't be greater than current car's mileage");
+        }
+        
+        await FinishRideInternalAsync(car.Id, odometerReading, cancellationToken);
+    }
+    
+    public async Task CancelRideAsync(string carId, CancellationToken cancellationToken)
+    {
+        var car = await GetCarByIdAsync(carId, cancellationToken);
+        await FinishRideInternalAsync(car.Id, null, cancellationToken);
+    }
+
+    private async Task FinishRideInternalAsync(string carId,
+        float? odometerReading,
+        CancellationToken cancellationToken)
+    {
+        await _carsRepository.UpdateCarAsync(carId,
+            null,
+            null,
+            null,
+            mileage: odometerReading,
+            status: CarStatus.Ready,
+            cancellationToken: cancellationToken);
+
+        await _messageProducer.SendAsync(Consts.Topics.Cars, new CarEvents.V1.CarFreed
+        {
+            CarId = carId
         });
     }
 }
