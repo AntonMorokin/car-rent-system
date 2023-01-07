@@ -13,6 +13,11 @@ services:
       - "5432:5432"
     volumes:
       - D:\repos\ContainersData\postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "sleep", "10"]
+      interval: 15s
+      timeout: 15s
+      retries: 1
 
   mongo:
     container_name: mongodb
@@ -24,6 +29,11 @@ services:
       - D:\repos\ContainersData\mongo\compose\db:/data/db
       - D:\repos\ContainersData\mongo\compose\configdb:/data/configdb
     command: "--noauth --replSet crs"
+    healthcheck:
+      test: ["CMD", "sleep", "20"]
+      interval: 25s
+      timeout: 25s
+      retries: 1
   
   kafka:
     container_name: kafka
@@ -44,6 +54,11 @@ services:
       - KAFKA_CFG_NUM_PARTITIONS=2
     volumes:
       - D:\repos\ContainersData\kafka:/bitnami/kafka
+    healthcheck:
+      test: ["CMD", "sleep", "30"]
+      interval: 35s
+      timeout: 35s
+      retries: 1
 
   clients.webapi:
     container_name: clients-webapi
@@ -52,7 +67,8 @@ services:
       context: .
       dockerfile: Clients/Clients.WebApi/Dockerfile
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
@@ -68,8 +84,10 @@ services:
       context: .
       dockerfile: Cars/Cars.WebApi/Dockerfile
     depends_on:
-      - postgres
-      - kafka
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:6000
@@ -86,8 +104,10 @@ services:
       context: .
       dockerfile: Rides/Rides.WebApi/Dockerfile
     depends_on:
-      - mongo
-      - kafka
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:7000

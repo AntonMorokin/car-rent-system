@@ -42,7 +42,21 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
             throw new ObjectDisposedException(nameof(MessageConsumer));
         }
 
-        _loopTask = Task.Run(ListenLoop);
+        _loopTask = Task.Run(ListenAsync);
+    }
+
+    private async Task ListenAsync()
+    {
+        try
+        {
+            await ListenLoop();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Error when listening for messages from topic: {topics}'",
+                string.Join(", ", _messageProcessor.Topics));
+        }
     }
 
     private async Task ListenLoop()
@@ -56,7 +70,7 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
             consumer.Subscribe(_messageProcessor.Topics);
 
             _logger.LogInformation(
-                "Started listening for messages from topic {topics}",
+                "Started listening for messages from topic: {topics}",
                 string.Join(", ", _messageProcessor.Topics));
 
             while (!_cts.IsCancellationRequested)
@@ -66,7 +80,7 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
                     var result = consumer.Consume(_cts.Token);
 
                     _logger.LogDebug(
-                        "Got message with key={key} from topic {topic}",
+                        "Consumed message with key='{key}' from '{topic}' topic",
                         result.Message.Key,
                         result.Topic);
 
@@ -74,26 +88,15 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
                 }
                 catch (OperationCanceledException)
                 {
+                    _logger.LogInformation("Listening was stopped");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,
-                        "Error when listening for messages from {topics}",
+                        "Error when consuming messages from topics: {topics}",
                         string.Join(", ", _messageProcessor.Topics));
                 }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogInformation("Listening was stopped");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex,
-                "Error when listening for messages from {topics}",
-                string.Join(", ", _messageProcessor.Topics));
-
-            throw;
         }
         finally
         {

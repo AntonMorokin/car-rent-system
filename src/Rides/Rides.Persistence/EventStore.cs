@@ -22,9 +22,14 @@ internal sealed class EventStore<T> : IEventStore<T> where T : Aggregate, new()
         _versions = db.GetCollection<AggregateVersion>("aggregate-versions");
     }
 
-    public async Task<string> GetNextIdAsync()
+    public Task<string> GetNextIdAsync()
     {
-        // TODO it needs to return unique id every call
+        // return GetNextIdByCollectionAsync();
+        return Task.FromResult(Guid.NewGuid().ToString("N"));
+    }
+
+    private async Task<string> GetNextIdByCollectionAsync()
+    {
         var lastId = await _events
             .Find(Builders<EventEnvelope>.Filter.Empty)
             .SortByDescending(e => e.Meta.AggregateId)

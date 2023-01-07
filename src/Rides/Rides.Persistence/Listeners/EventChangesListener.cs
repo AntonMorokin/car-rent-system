@@ -7,7 +7,7 @@ using Rides.Persistence.Views;
 
 namespace Rides.Persistence.Listeners;
 
-internal sealed class EventChangesListener<TAgg, TView> : IChangeStreamListener, IDisposable
+internal sealed class EventChangesListener<TAgg, TView> : IChangeStreamListener
     where TAgg : Aggregate
     where TView : ViewBase, new()
 {
@@ -133,10 +133,5 @@ internal sealed class EventChangesListener<TAgg, TView> : IChangeStreamListener,
             .SetOnInsert(t => t.AggregateName, _aggregateName);
 
         return _tokensCollection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
-    }
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
     }
 }
