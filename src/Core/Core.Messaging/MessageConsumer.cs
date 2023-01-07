@@ -61,14 +61,26 @@ public sealed class MessageConsumer : IMessageConsumer, IDisposable
 
             while (!_cts.IsCancellationRequested)
             {
-                var result = consumer.Consume(_cts.Token);
+                try
+                {
+                    var result = consumer.Consume(_cts.Token);
 
-                _logger.LogDebug(
-                    "Got message with key={key} from topic {topic}",
-                    result.Message.Key,
-                    result.Topic);
+                    _logger.LogDebug(
+                        "Got message with key={key} from topic {topic}",
+                        result.Message.Key,
+                        result.Topic);
 
-                await _messageProcessor.HandleAsync(result.Topic, result.Message.Value);
+                    await _messageProcessor.HandleAsync(result.Topic, result.Message.Value);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                        "Error when listening for messages from {topics}",
+                        string.Join(", ", _messageProcessor.Topics));
+                }
             }
         }
         catch (OperationCanceledException)

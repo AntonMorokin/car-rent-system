@@ -61,7 +61,7 @@ internal sealed class RidesService : IRidesService
         var clientExists = await _clientsEventStore.CheckIfAggregateExistsAsync(clientId);
         if (!clientExists)
         {
-            throw new DomainException(ErrorCodes.EntityNotFound, $"The car with Id={clientId} doesn't exists");
+            throw new DomainException(ErrorCodes.EntityNotFound, $"The client with Id={clientId} doesn't exists");
         }
 
         var car = await _carsEventStore.LoadAsync(carId);

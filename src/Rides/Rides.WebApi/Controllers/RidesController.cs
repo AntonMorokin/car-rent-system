@@ -72,7 +72,7 @@ public sealed class RidesController : ControllerBase
         }
     }
 
-    [HttpPut("start")]
+    [HttpPost("start")]
     public async Task<IActionResult> StartRideAsync([FromBody] StartRideRequest request)
     {
         try
@@ -94,7 +94,7 @@ public sealed class RidesController : ControllerBase
         }
     }
 
-    [HttpPut("finish")]
+    [HttpPost("finish")]
     public async Task<IActionResult> FinishRideAsync([FromBody] FinishRideRequest request)
     {
         try
@@ -117,7 +117,7 @@ public sealed class RidesController : ControllerBase
         }
     }
 
-    [HttpPut("cancel")]
+    [HttpPost("cancel")]
     public async Task<IActionResult> CancelRideAsync([FromBody] CancelRideRequest request)
     {
         try
